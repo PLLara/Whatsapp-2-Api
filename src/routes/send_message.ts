@@ -7,18 +7,18 @@ import { cachedDataVersionTag } from 'v8';
 
 
 
-router.get('/', async function (req: Request, res: Response) {
+router.post('/', async function (req: Request, res: Response) {
     var data = new Date();
-    const { route, mensagem, usuario, mediaLink } = req.query;
-    if (route == undefined || mensagem == undefined || usuario == undefined) {
-        return res.send('Message or route undefined' + JSON.stringify(req.query));
+    const { path, mensagem, usuario, mediaLink } = req.body;
+    if (path == undefined || mensagem == undefined || usuario == undefined) {
+        return res.send('Message or path undefined ->' + JSON.stringify(req.body));
     }
-    if (route == '' || mensagem == undefined || usuario == undefined) {
-        return res.send("Message or route empty" + JSON.stringify(req.query));
+    if (path == '' || mensagem == undefined || usuario == undefined) {
+        return res.send("Message or path empty ->" + JSON.stringify(req.body));
     }
 
 
-    if (typeof route == 'string') {
+    if (typeof path == 'string') {
         const firebaseApp = initializeApp({
             apiKey: "AIzaSyBGk-UQzUi87TkW-EPv75PXmXiZ_2n2ONU",
             authDomain: "whatsappi-2.firebaseapp.com",
@@ -31,7 +31,7 @@ router.get('/', async function (req: Request, res: Response) {
         });
         var db = getDatabase(firebaseApp);
 
-        const path = route + '/' + Date.now().toString();
+        const parsedPath = path + '/' + Date.now().toString();
 
         const eita = data.toLocaleString('pt-br');
         const tempo = eita.split(' ')[1]
@@ -41,7 +41,7 @@ router.get('/', async function (req: Request, res: Response) {
 
 
 
-        var response = await set(ref(db, path), {
+        var response = await set(ref(db, parsedPath), {
             date: parsedData,
             mediaLink: mediaLink ?? '',
             mensagem: mensagem,
@@ -56,3 +56,5 @@ router.get('/', async function (req: Request, res: Response) {
 });
 
 export default router;
+
+
