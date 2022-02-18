@@ -47,7 +47,7 @@ router.post('/', function (req, res) {
                 date: parsedData,
                 mediaLink: mediaLink !== null && mediaLink !== void 0 ? mediaLink : '',
                 mensagem: mensagem,
-                usuario: "+" + usuario
+                usuario: usuario
             });
             return res.send(response);
         }
