@@ -7,15 +7,15 @@ import logger from 'morgan';
 
 import indexRouter from './routes/index';
 import usersRouter from './routes/users';
+import sendMessageRouter from './routes/send_message';
 
 import cors from 'cors'
 import request from 'request';
 
-
 const app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', 'ejs');
 
 // middlewares setup
@@ -30,13 +30,15 @@ app.use(cors())
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+app.use('/sendMessage', sendMessageRouter)
+
 // proxys
 app.use('/proxy', function (req, res) {
-  const {url} = req.query;
-  if (url === ''){
+  const { url } = req.query;
+  if (url === '') {
     return res.send('no url provided');
   }
-  
+
   return (req.pipe(request(url as string))).pipe(res);
 });
 
