@@ -45,7 +45,7 @@ router.post('/', async function (req: Request, res: Response) {
             date: parsedData,
             mediaLink: mediaLink ?? '',
             mensagem: mensagem,
-            usuario: "+" + usuario
+            usuario: usuario
         });
 
         return res.send(response);

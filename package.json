@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node ./build/bin/www.js",
-    "dev": "nodemon ./bin/www.ts"
+    "dev": "nodemon ./bin/www.ts",
+    "deploy": "tsc-b & git add . &  git commit -m ':)' & git push heroku master"
   },
   "dependencies": {
     "@types/express": "^4.17.13",
