@@ -39,8 +39,12 @@ router.get('/', function (req, res) {
             });
             var db = (0, database_1.getDatabase)(firebaseApp);
             const path = route + '/' + Date.now().toString();
+            const eita = data.toLocaleString('pt-br');
+            const tempo = eita.split(' ')[1];
+            const dias = eita.split(' ')[0].split('/').reverse().join('-');
+            const parsedData = dias + " " + tempo;
             var response = yield (0, database_1.set)((0, database_1.ref)(db, path), {
-                date: data.toLocaleString(),
+                date: parsedData,
                 mediaLink: mediaLink !== null && mediaLink !== void 0 ? mediaLink : '',
                 mensagem: mensagem,
                 usuario: "+" + usuario

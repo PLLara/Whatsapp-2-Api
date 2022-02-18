@@ -3,6 +3,7 @@ const router = express.Router();
 
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, get, set } from "firebase/database";
+import { cachedDataVersionTag } from 'v8';
 
 
 
@@ -15,6 +16,7 @@ router.get('/', async function (req: Request, res: Response) {
     if (route == '' || mensagem == undefined || usuario == undefined) {
         return res.send("Message or route empty" + JSON.stringify(req.query));
     }
+
 
     if (typeof route == 'string') {
         const firebaseApp = initializeApp({
@@ -31,8 +33,16 @@ router.get('/', async function (req: Request, res: Response) {
 
         const path = route + '/' + Date.now().toString();
 
+        const eita = data.toLocaleString('pt-br');
+        const tempo = eita.split(' ')[1]
+        const dias = eita.split(' ')[0].split('/').reverse().join('-')
+
+        const parsedData = dias + " " + tempo
+
+
+
         var response = await set(ref(db, path), {
-            date: data.toLocaleString(),
+            date: parsedData,
             mediaLink: mediaLink ?? '',
             mensagem: mensagem,
             usuario: "+" + usuario
