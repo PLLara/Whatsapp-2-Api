@@ -1,5 +1,5 @@
 import { Sequelize, DataTypes, UUIDV4 } from 'sequelize';
-import { initModels } from './models/init-models';
+import { Conversas, initModels, Participantes, Users } from './models/init-models';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -21,8 +21,13 @@ class PostgresResponse<PayloadType> {
   }
 }
 
-class db {
+export default class db {
   sequelize: Sequelize;
+  models: {
+    Conversas: typeof Conversas,
+    Participantes: typeof Participantes,
+    Users: typeof Users
+  }
   constructor() {
     this.sequelize = new Sequelize({
       dialect: 'postgres',
@@ -39,6 +44,9 @@ class db {
       password: '1b983e0103400943db2b5e10367d572b3c5912103e136c5fbb3ff0f5f5bc1d89',
       ssl: true,
     })
+    this.models = initModels(this.sequelize)
+
+
   }
   // sequelize-auto -h ec2-52-70-120-204.compute-1.amazonaws.com -d d2t09buc90j96p -u yncpbtnklwlult -x 1b983e0103400943db2b5e10367d572b3c5912103e136c5fbb3ff0f5f5bc1d89 -p 5432 --dialect postgres -o ./models.ts
 
@@ -47,22 +55,83 @@ class db {
     await this.sequelize.sync();
   }
 
-  async getUsers(fone: string) {
-    return await this.sequelize.query("select * from users")
+
+  async getUser(fone: string): Promise<Users | null> {
+    const query = await this.models.Users.findAll({ where: { fone: fone } });
+    if (query.length > 0) {
+      return query[0]
+    }
+    return null;
+  }
+
+  async getAllUsers(): Promise<Users[]> {
+    return await this.models.Users.findAll()
+  }
+
+  async createConversa(titulo: string, descricao: string, criador: Users, thumbnail: string,) {
+    return await this.models.Conversas.create({
+      conversaId: uuidv4(),
+      titulo: titulo,
+      descricao: descricao,
+      criadorId: criador.userId,
+      thumbnail: thumbnail
+    })
+  }
+
+  async getConversasFromUser(user: Users): Promise<Conversas[]> {
+    return await user.getConversas()
+  }
+
+  async criarParticipacao(participante: Users, conversa: Conversas) {
+    return await this.models.Participantes.create({
+      id: uuidv4(),
+      conversaId: conversa.conversaId,
+      participanteId: participante.userId
+    })
+  }
+
+  async getParticipacoesFromUser(user: Users):Promise<Participantes[]>{
+    return await user.getParticipantes();
   }
 }
 
-async function main() {
-  const database = new db();
-  const {Conversas, Participantes, Users} = initModels(database.sequelize);
-  // await database.sequelize.sync();
 
-  const allUsers = await Users.findAll();
-  allUsers.forEach(user=>{
-    console.log(user);
-  })
-}
-main();
+// async function main() {
+//   const database = new db();
+//   // await database.sequelize.sync();
+
+//   await database.sequelize.query('DELETE FROM USERS WHERE 1=1');
+
+
+//   await Users.create({
+//     userId: uuidv4(),
+//     nome: 'lara',
+//     fone: "+5563992375408"
+//   })
+
+//   await Users.create({
+//     userId: uuidv4(),
+//     nome: 'pedro',
+//     fone:'+55992496492'
+//   })
+
+//   const lara = await database.getUser("+5563992375408")
+//   const pedro = await database.getUser("+55992496492")
+
+//   if (lara == null || pedro == null) {
+//     return;
+//   }
+
+//   await database.createConversa('conversada do larazaadaaa', 'opa', lara, 'eita',);
+//   const conversas = await database.getConversasFromUser(lara);
+//   console.log(conversas[0].toJSON());
+//   await database.criarParticipacao(pedro,conversas[0]);
+
+
+//   console.log(await database.getParticipacoesFromUser(pedro));
+
+// }
+// main();
 
 
 // class Postgres {

@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const init_models_1 = require("./models/init-models");
+const uuid_1 = require("uuid");
 var PgResponseStatus;
 (function (PgResponseStatus) {
     PgResponseStatus[PgResponseStatus["success"] = 0] = "success";
@@ -40,6 +41,7 @@ class db {
             password: '1b983e0103400943db2b5e10367d572b3c5912103e136c5fbb3ff0f5f5bc1d89',
             ssl: true,
         });
+        this.models = (0, init_models_1.initModels)(this.sequelize);
     }
     // sequelize-auto -h ec2-52-70-120-204.compute-1.amazonaws.com -d d2t09buc90j96p -u yncpbtnklwlult -x 1b983e0103400943db2b5e10367d572b3c5912103e136c5fbb3ff0f5f5bc1d89 -p 5432 --dialect postgres -o ./models.ts
     init() {
@@ -48,24 +50,78 @@ class db {
             yield this.sequelize.sync();
         });
     }
-    getUsers(fone) {
+    getUser(fone) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.sequelize.query("select * from users");
+            const query = yield this.models.Users.findAll({ where: { fone: fone } });
+            if (query.length > 0) {
+                return query[0];
+            }
+            return null;
+        });
+    }
+    getAllUsers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.models.Users.findAll();
+        });
+    }
+    createConversa(titulo, descricao, criador, thumbnail) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.models.Conversas.create({
+                conversaId: (0, uuid_1.v4)(),
+                titulo: titulo,
+                descricao: descricao,
+                criadorId: criador.userId,
+                thumbnail: thumbnail
+            });
+        });
+    }
+    getConversasFromUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user.getConversas();
+        });
+    }
+    criarParticipacao(participante, conversa) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.models.Participantes.create({
+                id: (0, uuid_1.v4)(),
+                conversaId: conversa.conversaId,
+                participanteId: participante.userId
+            });
+        });
+    }
+    getParticipacoesFromUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user.getParticipantes();
         });
     }
 }
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const database = new db();
-        const { Conversas, Participantes, Users } = (0, init_models_1.initModels)(database.sequelize);
-        // await database.sequelize.sync();
-        const allUsers = yield Users.findAll();
-        allUsers.forEach(user => {
-            console.log(user);
-        });
-    });
-}
-main();
+exports.default = db;
+// async function main() {
+//   const database = new db();
+//   // await database.sequelize.sync();
+//   await database.sequelize.query('DELETE FROM USERS WHERE 1=1');
+//   await Users.create({
+//     userId: uuidv4(),
+//     nome: 'lara',
+//     fone: "+5563992375408"
+//   })
+//   await Users.create({
+//     userId: uuidv4(),
+//     nome: 'pedro',
+//     fone:'+55992496492'
+//   })
+//   const lara = await database.getUser("+5563992375408")
+//   const pedro = await database.getUser("+55992496492")
+//   if (lara == null || pedro == null) {
+//     return;
+//   }
+//   await database.createConversa('conversada do larazaadaaa', 'opa', lara, 'eita',);
+//   const conversas = await database.getConversasFromUser(lara);
+//   console.log(conversas[0].toJSON());
+//   await database.criarParticipacao(pedro,conversas[0]);
+//   console.log(await database.getParticipacoesFromUser(pedro));
+// }
+// main();
 // class Postgres {
 //   static final Postgres _singleton = Postgres._internal();
 //   factory Postgres() {

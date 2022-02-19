@@ -6,13 +6,14 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
 import indexRouter from './routes/index';
-import usersRouter from './routes/users';
 import sendMessageRouter from './routes/send_message';
 
 import cors from 'cors'
 import request from 'request';
+import db from './data/postgres';
 
 const app = express();
+const database = new db();
 
 // view engine setup
 app.set('views', path.join(__dirname, '../views'));
@@ -28,7 +29,10 @@ app.use(cors())
 
 // routes
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
+import usersRouter from './routes/users/index'
+app.use('/',usersRouter(database));
+
 
 app.use('/sendMessage', sendMessageRouter)
 
@@ -39,13 +43,14 @@ app.use('/proxy', function (req, res) {
     return res.send('no url provided');
   }
 
-  return (req.pipe(request(url as string))).pipe(res);
+  return (req.pipe(request.get(url as string))).pipe(res);
 });
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
 });
+
 
 // error handler
 app.use(function (err: any, req: Request, res: Response, _next: NextFunction): void {

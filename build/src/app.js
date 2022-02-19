@@ -10,11 +10,12 @@ const path_1 = __importDefault(require("path"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const morgan_1 = __importDefault(require("morgan"));
 const index_1 = __importDefault(require("./routes/index"));
-const users_1 = __importDefault(require("./routes/users"));
 const send_message_1 = __importDefault(require("./routes/send_message"));
 const cors_1 = __importDefault(require("cors"));
 const request_1 = __importDefault(require("request"));
+const postgres_1 = __importDefault(require("./data/postgres"));
 const app = (0, express_1.default)();
+const database = new postgres_1.default();
 // view engine setup
 app.set('views', path_1.default.join(__dirname, '../views'));
 app.set('view engine', 'ejs');
@@ -27,7 +28,8 @@ app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
 app.use((0, cors_1.default)());
 // routes
 app.use('/', index_1.default);
-app.use('/users', users_1.default);
+const index_2 = __importDefault(require("./routes/users/index"));
+app.use('/', (0, index_2.default)(database));
 app.use('/sendMessage', send_message_1.default);
 // proxys
 app.use('/proxy', function (req, res) {
@@ -35,7 +37,7 @@ app.use('/proxy', function (req, res) {
     if (url === '') {
         return res.send('no url provided');
     }
-    return (req.pipe((0, request_1.default)(url))).pipe(res);
+    return (req.pipe(request_1.default.get(url))).pipe(res);
 });
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
