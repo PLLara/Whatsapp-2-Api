@@ -30,10 +30,16 @@ app.use(cors())
 // routes
 app.use('/', indexRouter);
 
+// manipulate users
 import usersRouter from './routes/users/index'
 app.use('/',usersRouter(database));
 
 
+// manipulate conversas
+import conversasRouter from './routes/conversas/index'
+app.use('/',conversasRouter(database))
+
+// send messages
 app.use('/sendMessage', sendMessageRouter)
 
 // proxys
