@@ -28,8 +28,13 @@ app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
 app.use((0, cors_1.default)());
 // routes
 app.use('/', index_1.default);
+// manipulate users
 const index_2 = __importDefault(require("./routes/users/index"));
 app.use('/', (0, index_2.default)(database));
+// manipulate conversas
+const index_3 = __importDefault(require("./routes/conversas/index"));
+app.use('/', (0, index_3.default)(database));
+// send messages
 app.use('/sendMessage', send_message_1.default);
 // proxys
 app.use('/proxy', function (req, res) {

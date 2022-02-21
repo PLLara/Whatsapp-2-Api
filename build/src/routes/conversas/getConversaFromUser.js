@@ -17,7 +17,7 @@ const basic_1 = __importDefault(require("../../validators/basic"));
 exports.default = (database) => {
     const router = express_1.default.Router();
     /* GET users listing. */
-    router.get("/", function (req, res) {
+    router.post("/", function (req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let { fone } = req.body;
             if (!(0, basic_1.default)(fone)) {
