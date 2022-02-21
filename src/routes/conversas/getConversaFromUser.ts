@@ -6,7 +6,7 @@ export default (database: db) => {
   const router = express.Router();
 
   /* GET users listing. */
-  router.get("/", async function (req: Request, res: Response) {
+  router.post("/", async function (req: Request, res: Response) {
     let { fone } = req.body;
 
     
