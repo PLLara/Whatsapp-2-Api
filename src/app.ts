@@ -48,7 +48,6 @@ app.use('/proxy', function (req, res) {
   if (url === '') {
     return res.send('no url provided');
   }
-
   return (req.pipe(request.get(url as string))).pipe(res);
 });
 

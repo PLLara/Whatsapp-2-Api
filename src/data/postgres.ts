@@ -37,11 +37,11 @@ export default class db {
           rejectUnauthorized: false // <<<<<<< YOU NEED THIS
         }
       },
-      host: 'ec2-52-70-120-204.compute-1.amazonaws.com',
-      database: 'd2t09buc90j96p',
-      username: 'yncpbtnklwlult',
+      host: 'ec2-3-218-171-44.compute-1.amazonaws.com',
+      database: 'da99fn3971ilh3',
+      username: 'ywvtinnpyvfmme',
       port: 5432,
-      password: '1b983e0103400943db2b5e10367d572b3c5912103e136c5fbb3ff0f5f5bc1d89',
+      password: 'e4f6ad24eb3479da7108bacafdc31578908da93873ac89979d914c535810eb1c',
       ssl: true,
     })
     this.models = initModels(this.sequelize)
